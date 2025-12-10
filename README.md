@@ -39,24 +39,6 @@ Backend (Server)
 - CORS: Configured for production and development environments.
 
 
-# 📂 Project StructurePlaintextSME-Loan-Prescreen/
-
-
-├── client/                 # React Frontend
-│   ├── src/
-│   │   ├── components/     # Dashboard, Login, SpotBot, etc.
-│   │   ├── assets/         # Images and logos
-│   │   └── rules.json      # Eligibility configuration
-│   └── package.json
-│
-├── server/                 # Node.js Backend
-│   ├── index.js            # Main server entry point
-│   ├── applications.db     # SQLite Database (Auto-generated)
-│   └── package.json
-│
-├── .gitignore              # Git ignore configuration
-└── README.md               # Project documentation
-
 
 
 # 🚀 Getting Started
@@ -67,8 +49,10 @@ Follow these steps to set up the project locally.
 1. Clone the Repository
 
 Bash
-```git clone https://github.com/LoneTerror/SME-Loan-Prescreen.git```
-```cd SME-Loan-Prescreen```
+```
+git clone https://github.com/LoneTerror/SME-Loan-Prescreen.git
+cd SME-Loan-Prescreen
+```
 
 
 2. Setup Backend
@@ -77,9 +61,11 @@ Bash
 
 
 Bash
-```cd server```
-```npm install```
-```node index.js```
+```
+cd server
+npm install
+node index.js
+```
 
 You should see: `✅ Connected to SQLite database.` and `🏦 Server running...`
 
@@ -88,9 +74,11 @@ You should see: `✅ Connected to SQLite database.` and `🏦 Server running...`
 
 
 Bash
-```cd client```
-```npm install```
-```npm run dev```
+```
+cd client
+npm install
+npm run dev
+```
 
 
 
