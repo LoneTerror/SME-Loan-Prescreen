@@ -1,0 +1,60 @@
+{
+  "eligibility": {
+    "min_turnover": 4200000,
+    "max_turnover": 5000000000,
+    "min_years_trading": 2,
+    "banned_sectors": ["Gambling", "Adult", "Arms", "Speculative Trading"],
+    "sme_bands": [
+      { "label": "Micro Enterprise", "limit": 100000000 },
+      { "label": "Small Enterprise", "limit": 1000000000 },
+      { "label": "Medium Enterprise", "limit": 5000000000 }
+    ]
+  },
+  "documents": {
+    "Sole Trader": [
+      { "id": "kyc_biz_pan", "label": "Business PAN Card", "required": true },
+      { "id": "kyc_own_pan", "label": "Owner's PAN Card", "required": true },
+      { "id": "kyc_own_aadhar", "label": "Owner's Aadhar", "required": true },
+      { "id": "kyc_office_proof", "label": "Office Address Proof", "required": true },
+      
+      { "id": "inc_pnl", "label": "P&L Statement (3 Years)", "required": true },
+      { "id": "inc_balance", "label": "Balance Sheet (3 Years)", "required": true },
+      { "id": "inc_itr", "label": "ITR Acknowledgement (3 Years)", "required": true },
+      { "id": "inc_bank", "label": "Bank Statement (6-12 Months)", "required": true },
+
+      { "id": "biz_reg", "label": "Business Registration Cert", "required": true },
+      { "id": "biz_cin", "label": "Corporate Identity Number (CIN)", "required": false },
+      { "id": "biz_directors", "label": "List of Directors", "required": false }
+    ],
+    "Ltd Company": [
+      { "id": "kyc_biz_pan", "label": "Business PAN Card", "required": true },
+      { "id": "kyc_own_pan", "label": "Director's PAN Card", "required": true },
+      { "id": "kyc_own_aadhar", "label": "Director's Aadhar", "required": true },
+      { "id": "kyc_office_proof", "label": "Registered Office Proof", "required": true },
+
+      { "id": "inc_pnl", "label": "P&L Statement (3 Years)", "required": true },
+      { "id": "inc_balance", "label": "Balance Sheet (3 Years)", "required": true },
+      { "id": "inc_itr", "label": "ITR Acknowledgement (3 Years)", "required": true },
+      { "id": "inc_bank", "label": "Bank Statement (6-12 Months)", "required": true },
+
+      { "id": "biz_reg", "label": "Certificate of Incorporation", "required": true },
+      { "id": "biz_cin", "label": "Corporate Identity Number (CIN)", "required": false },
+      { "id": "biz_directors", "label": "List of Directors", "required": false }
+    ],
+    "Partnership": [
+      { "id": "kyc_biz_pan", "label": "Firm PAN Card", "required": true },
+      { "id": "kyc_own_pan", "label": "Partner's PAN Card", "required": true },
+      { "id": "kyc_own_aadhar", "label": "Partner's Aadhar", "required": true },
+      { "id": "kyc_office_proof", "label": "Office Address Proof", "required": true },
+
+      { "id": "inc_pnl", "label": "P&L Statement (3 Years)", "required": true },
+      { "id": "inc_balance", "label": "Balance Sheet (3 Years)", "required": true },
+      { "id": "inc_itr", "label": "ITR Acknowledgement (3 Years)", "required": true },
+      { "id": "inc_bank", "label": "Bank Statement (6-12 Months)", "required": true },
+
+      { "id": "biz_reg", "label": "Partnership Deed", "required": true },
+      { "id": "biz_cin", "label": "Corporate Identity Number (CIN)", "required": false },
+      { "id": "biz_directors", "label": "List of Directors", "required": false }
+    ]
+  }
+}

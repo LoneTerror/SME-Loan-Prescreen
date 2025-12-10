@@ -1,0 +1,33 @@
+# --- Dependencies (Ignore in root and all subfolders) ---
+node_modules/
+*/node_modules/
+
+# --- Production Build Output (Client) ---
+client/dist/
+dist/
+build/
+
+# --- Database & Local Storage (Server) ---
+server/applications.db
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Environment Variables ---
+.env
+.env.local
+*/.env
+
+# --- Logs & Debugging ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- IDE & OS System Files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# loan_data.csv
