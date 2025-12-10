@@ -86,13 +86,17 @@ npm run dev
 
 Use the following credentials to access the different portals:
 
-Role            Username        Password        Features
+
+Role -> Applicant
+Username -> `user`
+Password -> `password`
+Features -> Submit loans, Upload docs, View History
 
 
-Applicant       `user`          `password`        Submit loans, Upload docs, View History
-
-
-Bank Admin      `admin`         `admin123`        View Charts, Approve/Reject Apps
+Role -> Bank Admin 
+Username -> `admin`
+Password -> `admin123`
+Features -> View Charts, Approve/Reject Apps
 
 
 
@@ -122,6 +126,6 @@ The project is configured for deployment environments like Pterodactyl or VPS.
 Startup: A `startup.sh` script is recommended to run both services concurrently in a single container.
 
 
-# Access Website Here:
+# Access The Website Here:
 
-`https://spot-check.site`
+URL: https://spot-check.site
