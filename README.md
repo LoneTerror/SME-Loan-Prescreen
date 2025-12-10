@@ -88,14 +88,22 @@ Use the following credentials to access the different portals:
 
 
 Role -> Applicant
+
 Username -> `user`
+
 Password -> `password`
+
 Features -> Submit loans, Upload docs, View History
 
 
+
+
 Role -> Bank Admin 
+
 Username -> `admin`
+
 Password -> `admin123`
+
 Features -> View Charts, Approve/Reject Apps
 
 
