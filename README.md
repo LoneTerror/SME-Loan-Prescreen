@@ -95,8 +95,7 @@ Password -> `password`
 
 Features -> Submit loans, Upload docs, View History
 
-
-
+---------------------------------------------------------------------
 
 Role -> Bank Admin 
 
