@@ -7,7 +7,7 @@ import {
 import { 
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-import logo from '../assets/logo.png'; 
+import logo from '../assets/logo-rounded.png'; 
 
 // --- CONFIGURATION ---
 const API_URL = 'https://backend.spot-check.site';
