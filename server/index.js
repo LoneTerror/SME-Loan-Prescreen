@@ -8,7 +8,7 @@ const port = process.env.PORT || 5010;
 
 // --- 2. UPDATE CORS (Allow your frontend domain) ---
 app.use(cors({
-  origin: ['https://spot-check.site', 'http://localhost:5173'], // Allow Prod & Dev
+  origin: ['https://spot-check.site', 'https://www.spot-check.site'], // Allow Prod & Dev
   methods: ['GET', 'POST'],
   credentials: true
 }));

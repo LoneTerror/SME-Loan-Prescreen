@@ -12,12 +12,17 @@ import rules from './rules.json';
 import Dashboard from './components/Dashboard'; 
 import Login from './components/Login'; 
 import SpotBot from './components/SpotBot'; 
-import logo from './assets/logo-rounded.png';
+import logo from './assets/logo.png';
 
 // --- CONFIGURATION ---
+// Points to the Production Backend API
 const API_URL = 'https://backend.spot-check.site';
 
-// --- CONSTANTS ---
+/**
+ * Document Structure Configuration
+ * Defines the sections and specific documents required for the application process.
+ * 'required: true' fields enforce validation before submission.
+ */
 const REQUIRED_DOCS_STRUCTURE = [
   {
     category: "KYC Documents",
@@ -50,22 +55,38 @@ const REQUIRED_DOCS_STRUCTURE = [
   }
 ];
 
-// --- NAVBAR COMPONENT ---
+/**
+ * Navbar Component
+ * Displays branding, user role pill, and logout controls.
+ */
 const Navbar = ({ userRole, onLogout, onHome }) => (
   <nav className="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 shadow-lg">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between h-16">
+        
+        {/* Branding Area */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={onHome}>
           <img src={logo} alt="SpotCheck" className="w-8 h-8 object-contain" />
           <span className="font-bold text-xl text-slate-100 tracking-tight">SpotCheck</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex flex-col items-end mr-2">
-            <span className="text-sm font-bold text-slate-200">{userRole === 'admin' ? 'Bank Administrator' : 'Applicant'}</span>
-            <span className="text-xs text-slate-400">Logged In</span>
+        
+        {/* User Actions Area */}
+        <div className="flex items-center gap-5">
+          {/* User Role Pill */}
+          <div className="hidden md:flex items-center gap-3 bg-slate-700/50 pl-2 pr-4 py-1.5 rounded-full border border-slate-600/50">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm bg-emerald-500">
+              AP
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-slate-100 leading-none mb-0.5">Applicant</span>
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide leading-none">Verified User</span>
+            </div>
           </div>
-          <button onClick={onLogout} className="bg-slate-700 border border-slate-600 hover:bg-red-900/40 text-slate-300 hover:text-red-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-            <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Logout</span>
+
+          <div className="h-6 w-px bg-slate-700"></div>
+
+          <button onClick={onLogout} className="group flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors text-sm font-medium">
+            <LogOut className="w-4 h-4 group-hover:stroke-red-400" /> <span className="hidden sm:inline">Sign Out</span>
           </button>
         </div>
       </div>
@@ -73,7 +94,10 @@ const Navbar = ({ userRole, onLogout, onHome }) => (
   </nav>
 );
 
-// --- MODALS ---
+/**
+ * Document Preview Modal
+ * Shows a simulated preview of the uploaded document when the 'Eye' icon is clicked.
+ */
 const DocPreviewModal = ({ isOpen, docName, onClose }) => {
   if (!isOpen) return null;
   return (
@@ -99,6 +123,10 @@ const DocPreviewModal = ({ isOpen, docName, onClose }) => {
   );
 };
 
+/**
+ * Action Modal Component
+ * Handles various interactive dialogs: Locked (Info), Revoke (Warning), Processing (Loader), Success.
+ */
 const ActionModal = ({ isOpen, type, data, onClose, onConfirm }) => {
   if (!isOpen) return null;
   return (
@@ -135,13 +163,17 @@ const ActionModal = ({ isOpen, type, data, onClose, onConfirm }) => {
 };
 
 export default function App() {
+  // --- STATE MANAGEMENT ---
   const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('sc_user_role') || null);
   const [applicantView, setApplicantView] = useState('dashboard');
+  
+  // Data States
   const [myApps, setMyApps] = useState([]);   
   const [legacyApps, setLegacyApps] = useState([]); 
   const [latestProfile, setLatestProfile] = useState(null); 
   const [selectedLegacyApp, setSelectedLegacyApp] = useState(null);
   
+  // UI & Form States
   const [modalState, setModalState] = useState({ isOpen: false, type: 'locked', data: null });
   const [previewDoc, setPreviewDoc] = useState(null);
   const [legacyFilter, setLegacyFilter] = useState('All'); 
@@ -155,9 +187,12 @@ export default function App() {
   const [submissionResult, setSubmissionResult] = useState(null);
   const [smeCategory, setSmeCategory] = useState(null);
 
+  /**
+   * Fetches application data from the backend.
+   * Splits data into 'myApps' (Web submissions) and 'legacyApps' (CSV imports).
+   */
   const fetchAllData = () => {
     if (currentUser === 'user') {
-      // UPDATED: Use Production API URL
       axios.get(`${API_URL}/api/applications`)
         .then(res => {
           const allData = res.data.data;
@@ -172,9 +207,14 @@ export default function App() {
 
   useEffect(() => { if (applicantView === 'dashboard') fetchAllData(); }, [applicantView, currentUser]);
 
+  // --- AUTHENTICATION HANDLERS ---
   const handleLogin = (role) => { setCurrentUser(role); localStorage.setItem('sc_user_role', role); };
   const handleLogout = () => { setCurrentUser(null); localStorage.removeItem('sc_user_role'); setApplicantView('dashboard'); };
   
+  /**
+   * Initializes the 'New Application' wizard.
+   * Pre-fills form data if a verified profile exists.
+   */
   const startNewApplication = (type) => {
     setLoanType(type);
     setFormData(latestProfile ? {
@@ -188,6 +228,9 @@ export default function App() {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
   };
 
+  /**
+   * Generates a PDF report for eligibility rejection.
+   */
   const downloadRejectionReport = () => {
     const doc = new jsPDF();
     doc.text(`Rejection Report for ${formData.companyName}`, 20, 20);
@@ -195,6 +238,10 @@ export default function App() {
     doc.save("Rejection_Report.pdf");
   };
 
+  /**
+   * Determines eligibility for Legacy Applications.
+   * Logic: Is user's turnover >= requested loan amount?
+   */
   const checkLegacyEligibility = (item) => {
     if (!latestProfile) return "NA"; 
     const userTurnover = parseInt(latestProfile.turnover) || 0;
@@ -229,7 +276,6 @@ export default function App() {
   const executeRevoke = async () => {
     setModalState(prev => ({ ...prev, type: 'processing' }));
     try {
-      // UPDATED: Use Production API URL
       await axios.post(`${API_URL}/api/status`, { refId: modalState.data.refId, status: 'Revoked' });
       await new Promise(resolve => setTimeout(resolve, 800));
       fetchAllData();
@@ -247,6 +293,7 @@ export default function App() {
     }, 1000);
   };
 
+  // --- VALIDATION: Ensure ALL Required Docs are Verified ---
   const REQUIRED_DOC_IDS = REQUIRED_DOCS_STRUCTURE.flatMap(section => section.items).filter(doc => doc.required).map(doc => doc.id);
   const isAllDocsComplete = REQUIRED_DOC_IDS.every(id => uploadedFiles[id]?.status === 'verified');
 
@@ -254,7 +301,6 @@ export default function App() {
     if (!isAllDocsComplete) return;
     setIsSubmitting(true);
     try {
-      // UPDATED: Use Production API URL
       const response = await axios.post(`${API_URL}/api/submit`, { applicant: formData, files: Object.keys(uploadedFiles), loanType: loanType, timestamp: new Date().toISOString() });
       setSubmissionResult(response.data); setApplicantView('success');
     } catch (err) { alert("Connection Error"); } finally { setIsSubmitting(false); }
@@ -268,12 +314,12 @@ export default function App() {
         files: Object.keys(uploadedFiles), loanType: `Legacy Opportunity (${selectedLegacyApp.sector} Match)`, timestamp: new Date().toISOString()
       };
       try {
-          // UPDATED: Use Production API URL
           const response = await axios.post(`${API_URL}/api/submit`, payload);
           setSubmissionResult(response.data); setApplicantView('success');
       } catch (err) { alert("Connection Error"); } finally { setIsSubmitting(false); }
   };
 
+  // --- CHECK ELIGIBILITY (Wizard Step 1) ---
   const handleCheckEligibility = () => {
     setError(null);
     setSmeCategory(null);
@@ -302,6 +348,7 @@ export default function App() {
   if (!currentUser) return <Login onLogin={handleLogin} />;
   if (currentUser === 'admin') return <Dashboard onBack={handleLogout} />;
 
+  // --- RENDER HELPERS ---
   const renderUploadSection = () => (
     <div className="space-y-8 animate-in slide-in-from-right duration-500">
       {REQUIRED_DOCS_STRUCTURE.map((section, idx) => (
