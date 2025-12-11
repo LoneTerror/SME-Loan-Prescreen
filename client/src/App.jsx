@@ -12,7 +12,7 @@ import rules from './rules.json';
 import Dashboard from './components/Dashboard'; 
 import Login from './components/Login'; 
 import SpotBot from './components/SpotBot'; 
-import logo from './assets/logo.png';
+import logo from './assets/logo-rounded.png';
 
 // --- CONFIGURATION ---
 // Points to the Production Backend API
