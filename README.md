@@ -45,6 +45,19 @@ Backend (Server)
 
 
 Follow these steps to set up the project locally.
+Note: The Repository is configured for production as the app is deployed and hosted at: https://spot-check.site and the routes point to production domains. You can directly visit this website for testing the prototype application.
+
+
+If you want to clone this repository and test the prototype application in local machine then it is mandatory to change the routes in two files to run it on local development (otherwise it'll still fetch the production routes, ignoring local development routes entirely).
+
+The modification steps are listed below:
+
+- Find `Configuration Section` at file `/src/App.jsx`
+
+- Find `Configuration Section` at file `/src/components/Dashboard.jsx`
+
+Comment out the `PRODUCTION URL` & Comment in the `DEVELOPMENT URL` on both files mentioned in (a & b) above
+
 
 1. Clone the Repository
 
@@ -79,6 +92,7 @@ cd client
 npm install
 npm run dev
 ```
+
 
 
 

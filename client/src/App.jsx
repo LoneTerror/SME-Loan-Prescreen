@@ -12,17 +12,16 @@ import rules from './rules.json';
 import Dashboard from './components/Dashboard'; 
 import Login from './components/Login'; 
 import SpotBot from './components/SpotBot'; 
-import logo from './assets/logo-rounded.png';
+import logo from './assets/logo.png';
 
 // --- CONFIGURATION ---
-// Points to the Production Backend API
+// DEVELOPMENT URL (For Local Testing)
+// const API_URL = 'http://localhost:3000'; 
+
+// PRODUCTION URL (Keep active for deployment)
 const API_URL = 'https://backend.spot-check.site';
 
-/**
- * Document Structure Configuration
- * Defines the sections and specific documents required for the application process.
- * 'required: true' fields enforce validation before submission.
- */
+// --- CONSTANTS ---
 const REQUIRED_DOCS_STRUCTURE = [
   {
     category: "KYC Documents",
@@ -55,38 +54,21 @@ const REQUIRED_DOCS_STRUCTURE = [
   }
 ];
 
-/**
- * Navbar Component
- * Displays branding, user role pill, and logout controls.
- */
 const Navbar = ({ userRole, onLogout, onHome }) => (
   <nav className="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 shadow-lg">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between h-16">
-        
-        {/* Branding Area */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={onHome}>
           <img src={logo} alt="SpotCheck" className="w-8 h-8 object-contain" />
           <span className="font-bold text-xl text-slate-100 tracking-tight">SpotCheck</span>
         </div>
-        
-        {/* User Actions Area */}
-        <div className="flex items-center gap-5">
-          {/* User Role Pill */}
-          <div className="hidden md:flex items-center gap-3 bg-slate-700/50 pl-2 pr-4 py-1.5 rounded-full border border-slate-600/50">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm bg-emerald-500">
-              AP
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-slate-100 leading-none mb-0.5">Applicant</span>
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide leading-none">Verified User</span>
-            </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex flex-col items-end mr-2">
+            <span className="text-sm font-bold text-slate-200">{userRole === 'admin' ? 'Bank Administrator' : 'Applicant'}</span>
+            <span className="text-xs text-slate-400">Logged In</span>
           </div>
-
-          <div className="h-6 w-px bg-slate-700"></div>
-
-          <button onClick={onLogout} className="group flex items-center gap-2 text-slate-400 hover:text-red-400 transition-colors text-sm font-medium">
-            <LogOut className="w-4 h-4 group-hover:stroke-red-400" /> <span className="hidden sm:inline">Sign Out</span>
+          <button onClick={onLogout} className="bg-slate-700 border border-slate-600 hover:bg-red-900/40 text-slate-300 hover:text-red-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+            <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>
@@ -94,10 +76,6 @@ const Navbar = ({ userRole, onLogout, onHome }) => (
   </nav>
 );
 
-/**
- * Document Preview Modal
- * Shows a simulated preview of the uploaded document when the 'Eye' icon is clicked.
- */
 const DocPreviewModal = ({ isOpen, docName, onClose }) => {
   if (!isOpen) return null;
   return (
@@ -123,10 +101,6 @@ const DocPreviewModal = ({ isOpen, docName, onClose }) => {
   );
 };
 
-/**
- * Action Modal Component
- * Handles various interactive dialogs: Locked (Info), Revoke (Warning), Processing (Loader), Success.
- */
 const ActionModal = ({ isOpen, type, data, onClose, onConfirm }) => {
   if (!isOpen) return null;
   return (
@@ -163,17 +137,13 @@ const ActionModal = ({ isOpen, type, data, onClose, onConfirm }) => {
 };
 
 export default function App() {
-  // --- STATE MANAGEMENT ---
   const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('sc_user_role') || null);
   const [applicantView, setApplicantView] = useState('dashboard');
-  
-  // Data States
   const [myApps, setMyApps] = useState([]);   
   const [legacyApps, setLegacyApps] = useState([]); 
   const [latestProfile, setLatestProfile] = useState(null); 
   const [selectedLegacyApp, setSelectedLegacyApp] = useState(null);
   
-  // UI & Form States
   const [modalState, setModalState] = useState({ isOpen: false, type: 'locked', data: null });
   const [previewDoc, setPreviewDoc] = useState(null);
   const [legacyFilter, setLegacyFilter] = useState('All'); 
@@ -187,10 +157,6 @@ export default function App() {
   const [submissionResult, setSubmissionResult] = useState(null);
   const [smeCategory, setSmeCategory] = useState(null);
 
-  /**
-   * Fetches application data from the backend.
-   * Splits data into 'myApps' (Web submissions) and 'legacyApps' (CSV imports).
-   */
   const fetchAllData = () => {
     if (currentUser === 'user') {
       axios.get(`${API_URL}/api/applications`)
@@ -207,14 +173,9 @@ export default function App() {
 
   useEffect(() => { if (applicantView === 'dashboard') fetchAllData(); }, [applicantView, currentUser]);
 
-  // --- AUTHENTICATION HANDLERS ---
   const handleLogin = (role) => { setCurrentUser(role); localStorage.setItem('sc_user_role', role); };
   const handleLogout = () => { setCurrentUser(null); localStorage.removeItem('sc_user_role'); setApplicantView('dashboard'); };
   
-  /**
-   * Initializes the 'New Application' wizard.
-   * Pre-fills form data if a verified profile exists.
-   */
   const startNewApplication = (type) => {
     setLoanType(type);
     setFormData(latestProfile ? {
@@ -223,14 +184,15 @@ export default function App() {
     setStep(1); setUploadedFiles({}); setApplicantView('wizard'); setSmeCategory(null);
   };
 
+  const preventNegative = (e) => {
+    if (e.key === '-' || e.key === 'e' || e.key === '+') e.preventDefault();
+  };
+
   const formatCurrency = (value) => {
     if (!value) return '';
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
   };
 
-  /**
-   * Generates a PDF report for eligibility rejection.
-   */
   const downloadRejectionReport = () => {
     const doc = new jsPDF();
     doc.text(`Rejection Report for ${formData.companyName}`, 20, 20);
@@ -238,10 +200,6 @@ export default function App() {
     doc.save("Rejection_Report.pdf");
   };
 
-  /**
-   * Determines eligibility for Legacy Applications.
-   * Logic: Is user's turnover >= requested loan amount?
-   */
   const checkLegacyEligibility = (item) => {
     if (!latestProfile) return "NA"; 
     const userTurnover = parseInt(latestProfile.turnover) || 0;
@@ -293,7 +251,6 @@ export default function App() {
     }, 1000);
   };
 
-  // --- VALIDATION: Ensure ALL Required Docs are Verified ---
   const REQUIRED_DOC_IDS = REQUIRED_DOCS_STRUCTURE.flatMap(section => section.items).filter(doc => doc.required).map(doc => doc.id);
   const isAllDocsComplete = REQUIRED_DOC_IDS.every(id => uploadedFiles[id]?.status === 'verified');
 
@@ -319,7 +276,6 @@ export default function App() {
       } catch (err) { alert("Connection Error"); } finally { setIsSubmitting(false); }
   };
 
-  // --- CHECK ELIGIBILITY (Wizard Step 1) ---
   const handleCheckEligibility = () => {
     setError(null);
     setSmeCategory(null);
@@ -348,7 +304,6 @@ export default function App() {
   if (!currentUser) return <Login onLogin={handleLogin} />;
   if (currentUser === 'admin') return <Dashboard onBack={handleLogout} />;
 
-  // --- RENDER HELPERS ---
   const renderUploadSection = () => (
     <div className="space-y-8 animate-in slide-in-from-right duration-500">
       {REQUIRED_DOCS_STRUCTURE.map((section, idx) => (
@@ -412,8 +367,8 @@ export default function App() {
                 <div><h1 className="text-3xl font-bold text-slate-800">Your Applications</h1><p className="text-slate-500">Track status and submit new requests.</p></div>
                 <button onClick={() => setApplicantView('modal')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all"><Plus className="w-5 h-5" /> Start New Application</button>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <table className="w-full text-left">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                <table className="w-full text-left min-w-[600px]">
                   <thead className="bg-slate-50 border-b border-slate-200"><tr><th className="p-4 text-sm font-bold text-slate-500">Ref ID</th><th className="p-4 text-sm font-bold text-slate-500">Date</th><th className="p-4 text-sm font-bold text-slate-500">Loan Type</th><th className="p-4 text-sm font-bold text-slate-500">Est. Amount</th><th className="p-4 text-sm font-bold text-slate-500">Status</th><th className="p-4 text-sm font-bold text-slate-500 text-right">Action</th></tr></thead>
                   <tbody className="divide-y divide-slate-100">
                     {myApps.map((app, i) => (
@@ -437,8 +392,8 @@ export default function App() {
                   <div className="flex items-center gap-2 px-2 border-r border-slate-200 mr-2"><ArrowUpDown className="w-4 h-4 text-slate-400" /><span className="text-xs font-bold text-slate-500 uppercase">Sort:</span><select value={legacySort} onChange={(e) => setLegacySort(e.target.value)} className="text-xs p-1 bg-slate-50 border border-slate-200 rounded-md text-slate-700 outline-none focus:border-indigo-500 cursor-pointer"><option value="None">None</option><option value="EligibleFirst">Eligible First</option><option value="IneligibleFirst">Ineligible First</option></select></div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-h-[500px] overflow-y-auto">
-                <table className="w-full text-left">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto max-h-[500px] overflow-y-auto">
+                <table className="w-full text-left min-w-[800px]">
                   <thead className="bg-slate-50 border-b border-slate-200 sticky top-0">
                     <tr><th className="p-4 text-xs font-bold text-slate-500 uppercase">Opp ID</th><th className="p-4 text-xs font-bold text-slate-500 uppercase">Industry</th><th className="p-4 text-xs font-bold text-slate-500 uppercase">Funding Amount</th><th className="p-4 text-xs font-bold text-slate-500 uppercase">Requirements</th><th className="p-4 text-xs font-bold text-slate-500 uppercase text-right">Eligibility</th><th className="p-4 text-xs font-bold text-slate-500 uppercase text-right">Action</th></tr>
                   </thead>
@@ -488,8 +443,55 @@ export default function App() {
                  <div className="space-y-6">
                     <div className="space-y-4">
                       <label className="block"><span className="text-sm font-semibold text-slate-700">Registered Company Name</span><input className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.companyName} onChange={e => setFormData({...formData, companyName: e.target.value})} placeholder="Acme India Pvt Ltd" /></label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><label className="block"><span className="text-sm font-semibold text-slate-700">Annual Turnover (₹)</span><input type="number" className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.turnover} onChange={e => setFormData({...formData, turnover: e.target.value})} placeholder="4200000" /></label><label className="block"><span className="text-sm font-semibold text-slate-700">Loan Amount Requested (₹)</span><input type="number" className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.amountRequested} onChange={e => setFormData({...formData, amountRequested: e.target.value})} placeholder="1000000" /></label></div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><label className="block"><span className="text-sm font-semibold text-slate-700">Years Active</span><input type="number" className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.yearsTrading} onChange={e => setFormData({...formData, yearsTrading: e.target.value})} placeholder="3" /></label><label className="block"><span className="text-sm font-semibold text-slate-700">Industry Sector</span><select className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg" value={formData.sector} onChange={e => setFormData({...formData, sector: e.target.value})}><option value="Retail">Retail</option><option value="Technology">Technology</option><option value="Manufacturing">Manufacturing</option><option value="Gambling">Gambling (Restricted)</option></select></label></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label className="block">
+                          <span className="text-sm font-semibold text-slate-700">Annual Turnover (₹)</span>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            onKeyDown={preventNegative} 
+                            className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={formData.turnover} 
+                            onChange={e => setFormData({...formData, turnover: e.target.value})} 
+                            placeholder="4200000" 
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-sm font-semibold text-slate-700">Loan Amount Requested (₹)</span>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            onKeyDown={preventNegative} 
+                            className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={formData.amountRequested} 
+                            onChange={e => setFormData({...formData, amountRequested: e.target.value})} 
+                            placeholder="1000000" 
+                          />
+                        </label>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label className="block">
+                          <span className="text-sm font-semibold text-slate-700">Years Active</span>
+                          <input 
+                            type="number" 
+                            min="0" 
+                            onKeyDown={preventNegative} 
+                            className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={formData.yearsTrading} 
+                            onChange={e => setFormData({...formData, yearsTrading: e.target.value})} 
+                            placeholder="3" 
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-sm font-semibold text-slate-700">Industry Sector</span>
+                          <select className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-lg" value={formData.sector} onChange={e => setFormData({...formData, sector: e.target.value})}>
+                            <option value="Retail">Retail</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Gambling">Gambling (Restricted)</option>
+                          </select>
+                        </label>
+                      </div>
                     </div>
                     {error && (<div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-100 space-y-2"><div className="flex items-center gap-2 font-bold"><AlertTriangle className="w-5 h-5" /> Eligibility Check Failed</div><p className="text-sm">{error}</p><button onClick={downloadRejectionReport} className="text-xs bg-white border border-red-200 text-red-600 px-3 py-2 rounded-md hover:bg-red-100 flex items-center gap-2 w-fit"><Download className="w-4 h-4" /> Download Official Rejection Report</button></div>)}
                     <button onClick={handleCheckEligibility} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-indigo-200 transition-all flex justify-center items-center gap-2">Check Eligibility <ArrowRight className="w-5 h-5" /></button>

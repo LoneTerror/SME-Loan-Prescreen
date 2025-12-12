@@ -7,9 +7,13 @@ import {
 import { 
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-import logo from '../assets/logo-rounded.png'; 
+import logo from '../assets/logo.png'; 
 
 // --- CONFIGURATION ---
+// DEVELOPMENT URL (For Local Testing)
+// const API_URL = 'http://localhost:3000'; 
+
+// PRODUCTION URL (Keep active for deployment)
 const API_URL = 'https://backend.spot-check.site';
 
 // --- SHARED NAVBAR COMPONENT (Configured for Admin) ---
@@ -223,8 +227,8 @@ export default function Dashboard({ onBack }) {
         )}
 
         {/* Applications Data Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-6 border-b border-slate-200 flex justify-between items-center">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+          <div className="p-6 border-b border-slate-200 flex justify-between items-center min-w-[1000px]">
             <h2 className="text-lg font-bold text-slate-800">Application Queue</h2>
             <button onClick={fetchApplications} className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
               <TrendingUp className="w-4 h-4"/> Refresh Data
@@ -236,7 +240,7 @@ export default function Dashboard({ onBack }) {
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2"/> Loading Database...
             </div>
           ) : (
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[1000px]">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="p-4 text-xs font-bold text-slate-500 uppercase">Ref ID</th>
