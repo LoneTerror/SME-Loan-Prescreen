@@ -45,6 +45,7 @@ Backend (Server)
 
 
 Follow these steps to set up the project locally.
+
 Note: The Repository is configured for production as the app is deployed and hosted at: https://spot-check.site and the routes point to production domains. You can directly visit this website for testing the prototype application.
 
 
